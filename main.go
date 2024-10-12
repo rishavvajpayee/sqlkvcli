@@ -45,23 +45,23 @@ func processCommand(command string, args []string) {
 			return
 		}
 
-		fmt.Println("Value :", result[key])
+		fmt.Println(result[key])
 	case "set":
-		if len(args) != 2 {
-			fmt.Println("Usage: set <key> <value>")
+		if len(args) < 2 {
+			fmt.Println("Usage: set <key> <value> <exp>")
 			return
 		}
 		exp := ""
 		key := args[0]
 		value := args[1]
 		if len(args) == 3 {
-			exp = args[1]
+			exp = args[2]
 		}
 		jsonBody := []byte(nil)
 		if exp != "" {
-			jsonBody = []byte(`{"key": "` + key + `", "value": "` + value + `", "expires_in": "` + exp + `"}`)
+			jsonBody = []byte(`{"key": "` + key + `", "value": ` + value + `, "expires_in": ` + exp + `}`)
 		} else {
-			jsonBody = []byte(`{"key": "` + key + `", "value": "` + value + `"}`)
+			jsonBody = []byte(`{"key": "` + key + `", "value": ` + value + `}`)
 		}
 		request, err := http.NewRequest("POST", fmt.Sprintf("%s/kv/set", serverURL), bytes.NewBuffer(jsonBody))
 		if err != nil {
@@ -77,7 +77,7 @@ func processCommand(command string, args []string) {
 		}
 		defer resp.Body.Close()
 		body, _ := io.ReadAll(resp.Body)
-		fmt.Println("Response:", string(body))
+		fmt.Println(string(body))
 	case "exit":
 		fmt.Println("Exiting CLI...")
 		os.Exit(0)
